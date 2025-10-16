@@ -34,7 +34,7 @@ Cansado de herramientas complejas con demasiada información? **sysmon** te mues
 
 ```bash
 # Clonar el repositorio
-git clone https://github.com/tuusuario/sysmon.git
+git clone https://github.com/syruxst/sysmon.git
 cd sysmon
 
 # Ejecutar el instalador
@@ -146,7 +146,7 @@ Las contribuciones son bienvenidas! Puedes:
 
 ```bash
 # Fork el proyecto
-git clone https://github.com/tuusuario/sysmon.git
+git clone https://github.com/syruxst/sysmon.git
 cd sysmon
 
 # Crear una rama
@@ -182,7 +182,7 @@ Este proyecto está bajo la Licencia MIT. Ver el archivo [LICENSE](LICENSE) para
 
 ## 👨‍💻 Autor
 
-Creado con ❤️ por [Tu Nombre]
+Creado con ❤️ por Daniel Ugalde
 
 ---
 
@@ -190,6 +190,6 @@ Creado con ❤️ por [Tu Nombre]
 
 **¿Te gusta sysmon?** Dale una ⭐ en GitHub!
 
-[Reportar Bug](https://github.com/tuusuario/sysmon/issues) · [Solicitar Feature](https://github.com/tuusuario/sysmon/issues) · [Documentación](https://github.com/tuusuario/sysmon/wiki)
+[Reportar Bug](https://github.com/syruxst/sysmon/issues) · [Solicitar Feature](https://github.com/syruxst/sysmon/issues) · [Documentación](https://github.com/syruxst/sysmon/wiki)
 
 </div># sysmon
