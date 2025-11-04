@@ -47,26 +47,17 @@ echo -e "${GREEN}✓ Python 3 encontrado${NC}"
 echo -e "\n${BLUE}🔍 Verificando psutil...${NC}"
 if ! python3 -c "import psutil" 2>/dev/null; then
     echo -e "${YELLOW}⚠️  psutil no está instalado. Instalando...${NC}"
-    
-    # Intentar instalar con pip3
-    if command -v pip3 &> /dev/null; then
-        pip3 install psutil
-    else
-        # Intentar con el gestor de paquetes del sistema
-        if command -v apt &> /dev/null; then
-            apt update && apt install -y python3-psutil
-        elif command -v dnf &> /dev/null; then
-            dnf install -y python3-psutil
-        elif command -v pacman &> /dev/null; then
-            pacman -S --noconfirm python-psutil
-        else
-            echo -e "${RED}❌ No se pudo instalar psutil automáticamente${NC}"
-            echo -e "${YELLOW}   Instálalo manualmente con: pip3 install psutil${NC}"
-            exit 1
-        fi
-    fi
+    pip3 install psutil
 fi
 echo -e "${GREEN}✓ psutil instalado${NC}"
+
+# Verificar/Instalar requests
+echo -e "\n${BLUE}🔍 Verificando requests...${NC}"
+if ! python3 -c "import requests" 2>/dev/null; then
+    echo -e "${YELLOW}⚠️  requests no está instalado. Instalando...${NC}"
+    pip3 install requests
+fi
+echo -e "${GREEN}✓ requests instalado${NC}"
 
 # Copiar el script a /usr/local/bin
 echo -e "\n${BLUE}📦 Instalando sysmon...${NC}"
