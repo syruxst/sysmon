@@ -119,6 +119,8 @@ Los colores te ayudan a identificar el estado del sistema de un vistazo:
 - 🟡 **Amarillo:** Uso moderado (50-80%)
 - 🔴 **Rojo:** Uso alto (> 80%)
 
+Cada disco tiene su propio color (azul, violeta, turquesa, rosa) para distinguirlos fácilmente; si un disco supera el 70 % pasa a amarillo, y desde el 85 % a rojo.
+
 ## 🗑️ Desinstalación
 
 ```bash

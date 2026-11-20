@@ -157,6 +157,14 @@ class Theme:
         self.crit = c("38;5;203")
         self.up = c("38;5;180")
         self.down = c("38;5;110")
+        # Un color distinto por disco (azul, violeta, turquesa, rosa)
+        self.disks = [c("38;5;75"), c("38;5;141"), c("38;5;80"), c("38;5;218")]
+
+    def disk_color(self, index, pct):
+        """Color propio del disco; amarillo/rojo si se está llenando."""
+        if pct >= 70:
+            return self.level(pct, 70, 85)
+        return self.disks[index % len(self.disks)]
 
     def level(self, pct, warn=50, crit=80):
         if pct >= crit:
@@ -170,7 +178,7 @@ BLOCKS = " ▏▎▍▌▋▊▉"
 SPARK = "▁▂▃▄▅▆▇█"
 
 
-def bar(pct, width, th):
+def bar(pct, width, th, color=None):
     pct = max(0.0, min(100.0, pct))
     exact = pct / 100 * width
     full = int(exact)
@@ -180,7 +188,7 @@ def bar(pct, width, th):
     if full < width and part:
         s += BLOCKS[part]
         used += 1
-    return f"{th.level(pct)}{s}{th.track}{'░' * (width - used)}{th.reset}"
+    return f"{color or th.level(pct)}{s}{th.track}{'░' * (width - used)}{th.reset}"
 
 
 def sparkline(values, width, th):
@@ -381,11 +389,12 @@ def render(s, th, cols, rows, sort_key, interval, public_ip):
     bw = max(10, min(40, inner - LABEL_W - 9 - 30))
     detail_w = inner - LABEL_W - bw - 9
 
-    def label(text):
-        return f"{th.label}{pad(fit(text, LABEL_W - 1), LABEL_W)}{th.reset}"
+    def label(text, color=None):
+        return f"{color or th.label}{th.bold}{pad(fit(text, LABEL_W - 1), LABEL_W)}{th.reset}"
 
-    def meter(name, pct, detail):
-        return (f"{label(name)}{bar(pct, bw, th)} {th.level(pct)}{pct:5.1f}%"
+    def meter(name, pct, detail, color=None):
+        return (f"{label(name, color)}{bar(pct, bw, th, color)} "
+                f"{color or th.level(pct)}{pct:5.1f}%"
                 f"{th.reset}  {th.muted}{fit(detail, detail_w)}{th.reset}")
 
     host = sanitize(socket.gethostname())
@@ -422,8 +431,9 @@ def render(s, th, cols, rows, sort_key, interval, public_ip):
     # --- Discos ----------------------------------------------------------
     if s["disks"]:
         f.section("Discos")
-        for mount, u in s["disks"]:
-            f.row(meter(mount, u.percent, f"{human(u.used)} / {human(u.total)}"))
+        for i, (mount, u) in enumerate(s["disks"]):
+            f.row(meter(mount, u.percent, f"{human(u.used)} / {human(u.total)}",
+                        th.disk_color(i, u.percent)))
 
     # --- Red -------------------------------------------------------------
     f.section("Red")
