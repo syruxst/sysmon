@@ -21,12 +21,14 @@ Cansado de herramientas complejas con demasiada información? **sysmon** te mues
 
 | Característica | Descripción |
 |---------------|-------------|
-| 📊 **CPU** | Uso, frecuencia, núcleos y temperatura |
+| 📊 **CPU** | Uso, frecuencia, núcleos, temperatura, historial y carga media |
 | 💾 **RAM** | Memoria usada, disponible y porcentaje |
-| 💿 **Disco** | Espacio usado, libre y porcentaje |
-| 🌐 **Red** | Datos enviados y recibidos |
-| ⏱️ **Uptime** | Tiempo de uso del PC |
-| 🔝 **Procesos** | Top 5 procesos por uso de CPU |
+| 💾 **Swap** | Uso de memoria de intercambio |
+| 💿 **Discos** | Todas las particiones montadas (hasta 4) |
+| 🌐 **Red** | Velocidad de subida/bajada en tiempo real y totales |
+| 🔌 **IPs** | IP local por interfaz e IP pública (opcional) |
+| ⏱️ **Uptime** | Tiempo encendido y número de procesos |
+| 🔝 **Procesos** | Tabla adaptable al alto de la terminal, ordenable por CPU o MEM |
 
 ## 🚀 Instalación
 
@@ -45,19 +47,18 @@ sudo ./install.sh
 ### Método 2: Instalación manual
 
 ```bash
-# Instalar psutil
-pip3 install psutil
+# Instalar psutil desde los repositorios de tu distribución
+sudo apt install python3-psutil
 
 # Copiar a /usr/local/bin
-sudo cp sysmon.py /usr/local/bin/sysmon
-sudo chmod +x /usr/local/bin/sysmon
+sudo install -m 0755 -o root -g root sysmon.py /usr/local/bin/sysmon
 ```
 
 ### Método 3: Uso sin instalar
 
 ```bash
 # Instalar solo las dependencias
-pip3 install psutil
+sudo apt install python3-psutil
 
 # Ejecutar directamente
 python3 sysmon.py
@@ -71,13 +72,27 @@ Una vez instalado, simplemente ejecuta:
 sysmon
 ```
 
-**Salir:** Presiona `Ctrl+C`
+### Teclas
+
+| Tecla | Acción |
+|-------|--------|
+| `q` / `Ctrl+C` | Salir |
+| `s` | Ordenar procesos por CPU o por memoria |
+
+### Opciones
+
+```bash
+sysmon -i 1           # actualizar cada 1 segundo (0.5 - 60, por defecto 2)
+sysmon --public-ip    # mostrar también la IP pública (consulta api.ipify.org cada 5 min)
+sysmon --once         # imprimir una sola instantánea y salir (útil en scripts)
+sysmon --no-color     # sin colores (también respeta la variable NO_COLOR)
+```
 
 ## 📋 Requisitos
 
 - **Sistema Operativo:** Linux (cualquier distribución)
 - **Python:** 3.6 o superior
-- **Dependencias:** psutil (se instala automáticamente)
+- **Dependencias:** psutil (el instalador lo instala desde el gestor de paquetes del sistema)
 
 ### Distribuciones probadas:
 - ✅ Ubuntu / Debian
@@ -90,16 +105,11 @@ sysmon
 
 ### Cambiar la frecuencia de actualización
 
-Edita el archivo `sysmon.py` y busca esta línea:
+Usa la opción `-i`, sin editar el código:
 
-```python
-time.sleep(3)  # Actualiza cada 3 segundos
+```bash
+sysmon -i 5   # menos uso de CPU
 ```
-
-Cambia el `3` por el número de segundos que prefieras:
-- `1` = Actualización muy rápida (más uso de CPU)
-- `3` = Equilibrado (recomendado)
-- `5` = Actualización más lenta (menos uso de CPU)
 
 ## 📊 Indicadores de color
 
@@ -112,16 +122,23 @@ Los colores te ayudan a identificar el estado del sistema de un vistazo:
 ## 🗑️ Desinstalación
 
 ```bash
-sudo rm /usr/local/bin/sysmon
+sudo ./install.sh --uninstall
 ```
+
+## 🔒 Seguridad
+
+- Los nombres de procesos, usuarios, interfaces y puntos de montaje se **sanean** antes de mostrarse: un proceso con secuencias de escape en su nombre no puede manipular tu terminal.
+- **No se hace ninguna conexión externa** por defecto. La IP pública solo se consulta con `--public-ip` (por HTTPS con certificado verificado) y solo se muestra si la respuesta es una IP válida.
+- La terminal se restaura siempre al salir, incluso con `SIGTERM` o `SIGHUP`.
+- El instalador no usa `pip` como root: instala `psutil` desde los paquetes firmados de tu distribución, instala el binario como `root:root 0755` de forma atómica y fija el intérprete con `python3 -I` (modo aislado) para que `PYTHONPATH` o archivos del directorio actual no puedan inyectar código.
 
 ## 🐛 Solución de problemas
 
 ### "psutil no está instalado"
 ```bash
-pip3 install psutil
-# o
-sudo apt install python3-psutil
+sudo apt install python3-psutil      # Debian / Ubuntu / Kali
+sudo dnf install python3-psutil      # Fedora / RHEL
+sudo pacman -S python-psutil         # Arch
 ```
 
 ### "Permiso denegado"
@@ -162,6 +179,14 @@ git push origin mi-nueva-funcionalidad
 ```
 
 ## 📝 Changelog
+
+### v2.0.0
+- 🎨 Nueva interfaz con paneles, pantalla alternativa y diseño adaptable al tamaño de la terminal
+- 📈 Historial de CPU, uso por núcleo, swap, múltiples discos y velocidad de red
+- ⌨️ Teclas `q` y `s`, opciones `-i`, `--once`, `--no-color`, `--public-ip`
+- 🔒 Saneado de texto contra inyección de secuencias de escape
+- 🔒 IP pública opcional y validada; se elimina la dependencia de `requests`
+- 🔒 Instalador endurecido (sin pip como root, instalación atómica, `--uninstall`)
 
 ### v1.0.0 (2025-10-15)
 - 🎉 Lanzamiento inicial
